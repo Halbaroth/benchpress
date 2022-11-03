@@ -1,11 +1,11 @@
 (executable
- (name benchpress_server)
+ (name main)
  (public_name benchpress-server)
  (package benchpress-server)
  (modes native)
  (promote (into ../../) (until-clean))
  (libraries benchpress containers cmdliner result uuidm logs logs.cli
-            tiny_httpd sqlite3_utils base64 printbox jemalloc)
+            tiny_httpd sqlite3_utils base64 printbox jemalloc ocaml-protoc)
  (flags :standard -warn-error -a+8 -safe-string -open Benchpress -linkall))
 
 (rule
@@ -26,7 +26,7 @@
        ))))
 
 (rule
- (with-stdout-to benchpress-server.1 (run ./benchpress_server.exe --help=groff)))
+ (with-stdout-to benchpress-server.1 (run ./main.exe --help=groff)))
 
 (install
  (section man)
