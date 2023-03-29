@@ -16,9 +16,7 @@ let run cmd : Run_proc_result.t =
   let start = Ptime_clock.now() in
   (* call process and block *)
   let p =
-    let cmd =
-      Format.sprintf "wrapper \
-        --show-output -- %s" cmd in
+    let cmd = Format.sprintf "wrapper %s" cmd in
     try
       let oc, ic, errc = Unix.open_process_full cmd (Unix.environment()) in
       close_out ic;
