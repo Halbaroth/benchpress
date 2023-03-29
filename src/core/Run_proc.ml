@@ -17,8 +17,7 @@ let run cmd : Run_proc_result.t =
   (* call process and block *)
   let p =
     let cmd =
-      Format.sprintf "wrapper \
-        --show-output -- %s" cmd in
+      Format.sprintf "wrapper %s" cmd in
     try
       let oc, ic, errc = Unix.open_process_full cmd (Unix.environment()) in
       close_out ic;

@@ -10,7 +10,7 @@ let int_of_process_status = function
 
 let () =
   let args = Sys.argv |> Array.to_list |> List.tl in
-  if List.length args = 0 then failwith "Require a command";
+  if List.length args = 0 then failwith "Require a command too";
   let cmd = Format.asprintf "%a" pp_list args in
   let stdout, stdin, stderr =
     Unix.open_process_full cmd (Unix.environment ())
@@ -21,7 +21,8 @@ let () =
   Thread.join t_err;
   let status = Unix.close_process_full (stdout, stdin, stderr) in
   let usage = Rusage.get Children in
-  Format.fprintf (Format.std_formatter) "%f\n%f\n@?" usage.utime usage.stime;
+  Format.fprintf (Format.std_formatter) "%f@\n%f@\n@?" usage.utime usage.stime;
   Format.fprintf (Format.std_formatter) "%s@?" out;
   Format.fprintf (Format.err_formatter) "%s@?" !err;
+  Format.printf "COMMAND: %a@." pp_list args;
   exit (int_of_process_status status)
