@@ -190,6 +190,7 @@ let run ?env ?proof_file ~limits ~file (self:t) : Run_proc_result.t =
   let prefix = Ulimit.cmd ~conf:self.ulimits ~limits:(
       Limit.All.update_time (CCOpt.map Limit.Time.(add (mk ~s:1 ()))) limits
     ) in
+  let cmd = Format.asprintf "wrapper %s" cmd in
   let cmd = Ulimit.prefix_cmd ?prefix ~cmd () in
   Run_proc.run cmd
 
