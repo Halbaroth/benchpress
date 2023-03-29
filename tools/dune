@@ -1,0 +1,5 @@
+(executable
+ (public_name wrapper)
+ (package benchpress)
+ (name wrapper)
+ (libraries rusage cmdliner unix threads.posix))
