@@ -13,3 +13,4 @@ qtest*
 .merlin
 *.exe
 *.install
+_opam

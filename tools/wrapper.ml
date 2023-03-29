@@ -8,8 +8,10 @@ let int_of_process_status = function
   | Unix.WSIGNALED i
   | Unix.WSTOPPED i -> i
 
-let main show_output prog args =
-  let cmd = Format.asprintf "%s %a" prog pp_list args in
+let () =
+  let args = Sys.argv |> Array.to_list |> List.tl in
+  if List.length args = 0 then failwith "Require a command";
+  let cmd = Format.asprintf "%a" pp_list args in
   let stdout, stdin, stderr =
     Unix.open_process_full cmd (Unix.environment ())
   in
@@ -19,40 +21,7 @@ let main show_output prog args =
   Thread.join t_err;
   let status = Unix.close_process_full (stdout, stdin, stderr) in
   let usage = Rusage.get Children in
-  Format.printf "%f\n%f\n@!" usage.utime usage.stime;
-  if show_output then begin
-    Format.fprintf (Format.std_formatter) "%s@!" out;
-    Format.fprintf (Format.err_formatter) "%s@!" !err;
-  end;
+  Format.fprintf (Format.std_formatter) "%f\n%f\n@?" usage.utime usage.stime;
+  Format.fprintf (Format.std_formatter) "%s@?" out;
+  Format.fprintf (Format.err_formatter) "%s@?" !err;
   exit (int_of_process_status status)
-
-module Cmd = struct
-  open Cmdliner
-
-  let show_output =
-    let doc = "Show the stdout and stderr of the program" in
-    Arg.(
-      value & flag & info ["s"; "show-output"] ~doc)
-
-  let prog =
-    Arg.(required & pos 0 (some string) None (Arg.info [] ~docv:"PROG"))
-
-  and args = Arg.(value & pos_right 0 string [] (Arg.info [] ~docv:"ARGS"))
-
-  let cmd =
-    let doc = "Wrapper" in
-    let man =
-      [
-        `S Manpage.s_description;
-        `P "$(tname)";
-        `S Manpage.s_bugs;
-        `P "Bug reports to <pierre.villemot@ocamlpro.com>";
-      ]
-    in
-    let info = Cmd.info "getrusage" ~version:"dev" ~doc ~man in
-    Cmd.v info Term.(const main $ show_output $ prog $ args)
-
-  let main () = exit (Cmd.eval cmd)
-end
-
-let () = Cmd.main ()
