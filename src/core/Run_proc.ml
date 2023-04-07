@@ -10,7 +10,9 @@ let cpu_times oc =
   let get_float oc =
     Option.(bind (In_channel.input_line oc) float_of_string_opt |> get)
   in
-  get_float oc, get_float oc
+  let utime = get_float oc in
+  let stime = get_float oc in
+  utime, stime
 
 let run cmd : Run_proc_result.t =
   let start = Ptime_clock.now() in
